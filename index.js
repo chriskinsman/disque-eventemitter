@@ -29,7 +29,15 @@ function DisqueEventEmitter(disqueHost, disquePort, queueName, options) {
         });
     }
 
-    readQueue();
+    disq.on('connected', function(err) {
+        if(err) {
+            console.error(err);
+        }
+        else {
+            readQueue();
+        }
+    });
+
 
     this.ack = function(job, callback) {
         if(job && job.jobId) {
