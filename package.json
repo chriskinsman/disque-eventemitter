@@ -1,0 +1,16 @@
+{
+  "name": "disque-eventemitter",
+  "version": "0.0.1",
+  "description": "EventEmitter wrapper for Disque GetJob",
+  "main": "index.js",
+  "author": "Chris Kinsman",
+  "license": "MIT",
+  "keywords": [
+    "Disque",
+    "Disqueue",
+    "EventEmitter"
+  ],
+  "dependencies": {
+    "disqueue-node": "^1.1.1",
+  }
+}
