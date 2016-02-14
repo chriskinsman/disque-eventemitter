@@ -18,15 +18,6 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
 
     EventEmitter.call(this);
 
-    function getNextMessage() {
-        if(concurrencyPaused && pendingMessages<self.concurrency) {
-            setImmediate(readQueue);
-        }
-        else {
-            concurrencyPaused = true;
-        }
-    }
-
     // Main message processor
     function readQueue() {
         disq.getJob({queue: queueName, count: self.jobCount, withcounters: self.withCounters}, function(err, jobs) {
@@ -39,7 +30,7 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
                     self.emit('job', job, function(handled) {
                         function completeMessage() {
                             pendingMessages--;
-                            if(concurrencyPaused && pendingMessages < self.concurrency) {
+                            if(!self.paused && concurrencyPaused && pendingMessages < self.concurrency) {
                                 concurrencyPaused = false;
                                 setImmediate(readQueue);
                             }
@@ -54,7 +45,7 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
                     });
                 });
 
-                if(pendingMessages<self.concurrency) {
+                if(!self.paused && pendingMessages<self.concurrency) {
                     setImmediate(readQueue);
                 }
                 else {
@@ -74,15 +65,15 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
     });
 
     this.pause = function pause() {
-        if(!this.paused) {
-            this.paused = true;
-        }
+        this.paused = true;
     };
 
     this.resume = function resume() {
         if(this.paused) {
             this.paused = false;
-            readQueue();
+            if(!concurrencyPaused && pendingMessages < self.concurrency) {
+                readQueue();
+            }
         }
     }
 }

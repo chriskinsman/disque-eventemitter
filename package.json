@@ -1,6 +1,6 @@
 {
   "name": "disque-eventemitter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "EventEmitter wrapper for Disque GetJob",
   "main": "index.js",
   "author": "Chris Kinsman",
