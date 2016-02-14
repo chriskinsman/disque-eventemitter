@@ -33,10 +33,12 @@ de.on('error', function(err) {
 
 de.on('job', function(job, done) {
     console.info(job);
-    // Indicate we are done and to ack the job
-    setTimeout(function(){
-        done(true);
-    }, 5000 * Math.random());
+    de.ack(job, function() {
+        // Indicate we are done and to ack the job
+        setTimeout(function(){
+            done();
+        }, 5000 * Math.random());
+    });
 });
 ```
 
@@ -55,6 +57,13 @@ __Arguments__
     - `jobCount` - Number of jobs to get at once. Defaults to 1.  If you get more than one job at a time all will be emitted and may exceed concurrency limit.
     - `withCounters` - Get jobs with counters showing nacks and additional deliveries 
 
+### ack(job, callback)
+
+Removes job from queue.  If you don't ack a job it will keep reappearing in emitted events.
+
+### nack(job, callback)
+
+Immediately returns job back to queue.  Job will be re-emitted.
 
 ### pause()
 
@@ -63,6 +72,12 @@ Pauses emitting jobs.  Jobs may still be emitted from the previous scan operatio
 ### resume()
 
 Resumes a paused emitter.
+
+### job event
+
+.on('job', function(job, done){})
+
+When the job event is raised the callback receives two arguments: the job, and a completion callback.  You must call the completion callback when done to prevent stalling the EventEmitter
 
 ## People
 

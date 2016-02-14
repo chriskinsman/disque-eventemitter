@@ -11,8 +11,10 @@ de.on('error', function(err) {
 
 de.on('job', function(job, done) {
     console.info(job);
-    // Indicate we are done and to ack the job
-    setTimeout(function(){
-        done(true);
-    }, 5000 * Math.random());
+    de.ack(job, function() {
+        // Indicate we are done and to ack the job
+        setTimeout(function(){
+            done();
+        }, 5000 * Math.random());
+    });
 });

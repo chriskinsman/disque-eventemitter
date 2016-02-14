@@ -27,20 +27,11 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
             else {
                 jobs.forEach(function(job) {
                     pendingMessages++;
-                    self.emit('job', job, function(handled) {
-                        function completeMessage() {
-                            pendingMessages--;
-                            if(!self.paused && concurrencyPaused && pendingMessages < self.concurrency) {
-                                concurrencyPaused = false;
-                                setImmediate(readQueue);
-                            }
-                        }
-
-                        if(handled) {
-                            disq.ackJob(job.jobId, completeMessage);
-                        }
-                        else {
-                            disq.nack(job.jobId, completeMessage);
+                    self.emit('job', job, function() {
+                        pendingMessages--;
+                        if(!self.paused && concurrencyPaused && pendingMessages < self.concurrency) {
+                            concurrencyPaused = false;
+                            setImmediate(readQueue);
                         }
                     });
                 });
@@ -63,6 +54,24 @@ function DisqueEventEmitter(disqueConfig, queueName, options) {
             readQueue();
         }
     });
+
+    this.ack = function ack(job, callback) {
+        if(job && job.jobId) {
+            disq.ackJob(job.jobId, callback);
+        }
+        else {
+            callback('Invalid job');
+        }
+    };
+
+    this.nack = function nack(job, callback) {
+        if(job && job.jobId) {
+            disq.nack(job.jobId, callback);
+        }
+        else {
+            callback('Invalid job');
+        }
+    };
 
     this.pause = function pause() {
         this.paused = true;
