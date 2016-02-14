@@ -1,17 +1,18 @@
 'use strict';
 
-var DisqEvent = require('./index');
+var DisqueEventEmitter = require('./index');
 
 console.info('Listening for jobs Ctrl-C to end');
-var de = new DisqEvent('127.0.0.1', 7711, 'test');
+var de = new DisqueEventEmitter({host:'127.0.0.1', port: 7711}, 'test', {concurrency: 2});
 
 de.on('error', function(err) {
     console.error(err);
 });
 
-de.on('job', function(job) {
+de.on('job', function(job, done) {
     console.info(job);
-    de.ack(job, function(err) {
-       console.info('Job acked');
-    });
+    // Indicate we are done and to ack the job
+    setTimeout(function(){
+        done(true);
+    }, 5000 * Math.random());
 });
