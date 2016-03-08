@@ -7,3 +7,4 @@ build:
     - node --version
     - npm --version
     - shippable_retry npm install
+  cache: true
