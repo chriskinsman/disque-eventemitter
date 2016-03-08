@@ -1,10 +1,9 @@
 language: node_js
 node_js: 4.2.2
 
-before_install:
-  - . /root/.nvm/nvm.sh && nvm alias default 4.2.2
-  - node --version
-  - npm --version
 
-install:
-  - shippable_retry npm install
+build:
+  ci:
+    - node --version
+    - npm --version
+    - shippable_retry npm install
